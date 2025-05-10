@@ -1,0 +1,1019 @@
+/* Reset básico */
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+/* Variables globales */
+:root {
+  --color-background: #ffffff;
+  --color-text: #0a0a0a;
+  --color-primary: #171717;
+  --color-primary-text: #fafafa;
+  --color-secondary: #f5f5f5;
+  --color-secondary-text: #171717;
+  --color-muted: #737373;
+  --color-border: #e5e5e5;
+  --color-input: #e5e5e5;
+  --color-focus: #171717;
+  --color-error: #ef4444;
+  --border-radius: 0.5rem;
+}
+
+/* Tema oscuro */
+.dark {
+  --color-background: #0a0a0a;
+  --color-text: #fafafa;
+  --color-primary: #fafafa;
+  --color-primary-text: #171717;
+  --color-secondary: #262626;
+  --color-secondary-text: #fafafa;
+  --color-muted: #a3a3a3;
+  --color-border: #262626;
+  --color-input: #262626;
+  --color-focus: #d4d4d4;
+}
+
+/* Estilos base */
+body {
+  background-color: var(--color-background);
+  color: var(--color-text);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans",
+    "Helvetica Neue", sans-serif;
+  line-height: 1.5;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+}
+
+.main-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+p {
+  margin-bottom: 1rem;
+}
+
+/* Utilidades */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Navbar Styles */
+.navbar-header {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.navbar-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  height: 4rem;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1rem;
+}
+
+.navbar-left-section,
+.navbar-right-section {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.navbar-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.navbar-logo-circle {
+  height: 2.5rem;
+  width: 2.5rem;
+  border-radius: 50%;
+  border: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.navbar-logo-circle span {
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.navbar-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.navbar-nav-button {
+  border-radius: 9999px;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  background-color: transparent;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.navbar-nav-button:hover {
+  background-color: var(--color-secondary);
+}
+
+.navbar-nav-button.active {
+  background-color: var(--color-primary);
+  color: var(--color-primary-text);
+}
+
+.navbar-profile-dropdown {
+  position: relative;
+}
+
+.navbar-profile-button {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-secondary);
+  border: none;
+  cursor: pointer;
+}
+
+.navbar-dropdown-menu {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  margin-top: 0.5rem;
+  background-color: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  min-width: 10rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 50;
+}
+
+.navbar-dropdown-item {
+  display: block;
+  width: 100%;
+  padding: 0.5rem 1rem;
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.875rem;
+}
+
+.navbar-dropdown-item:hover {
+  background-color: var(--color-secondary);
+}
+
+/* Dialog Styles */
+.dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.dialog-content {
+  background-color: var(--color-background);
+  border-radius: var(--border-radius);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 425px;
+  padding: 1.5rem;
+  position: relative;
+}
+
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.dialog-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.dialog-close-button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--color-text);
+  opacity: 0.7;
+}
+
+.dialog-close-button:hover {
+  opacity: 1;
+}
+
+.dialog-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.dialog-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.dialog-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.dialog-input {
+  padding: 0.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  background-color: var(--color-background);
+  color: var(--color-text);
+  font-size: 0.875rem;
+}
+
+.dialog-input:focus {
+  outline: none;
+  border-color: var(--color-focus);
+  box-shadow: 0 0 0 2px rgba(23, 23, 23, 0.2);
+}
+
+.dialog-primary-button {
+  padding: 0.5rem 1rem;
+  background-color: var(--color-primary);
+  color: var(--color-primary-text);
+  border: none;
+  border-radius: var(--border-radius);
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.dialog-primary-button:hover {
+  opacity: 0.9;
+}
+
+.dialog-secondary-button {
+  padding: 0.5rem 1rem;
+  background-color: transparent;
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.dialog-secondary-button:hover {
+  background-color: var(--color-secondary);
+}
+
+.dialog-separator {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 1rem 0;
+  color: var(--color-muted);
+}
+
+.dialog-separator::before,
+.dialog-separator::after {
+  content: "";
+  flex: 1;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.dialog-separator span {
+  padding: 0 0.5rem;
+  font-size: 0.75rem;
+}
+
+.dialog-google-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: transparent;
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.dialog-google-button:hover {
+  background-color: var(--color-secondary);
+}
+
+.dialog-register-link {
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 0.875rem;
+  color: var(--color-muted);
+}
+
+.dialog-link-button {
+  background: none;
+  border: none;
+  color: var(--color-primary);
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0;
+}
+
+.dialog-link-button:hover {
+  text-decoration: underline;
+}
+
+.dialog-button-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.dialog-switch-group {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dialog-switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 24px;
+}
+
+.dialog-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.dialog-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: .4s;
+  border-radius: 24px;
+}
+
+.dialog-slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+input:checked + .dialog-slider {
+  background-color: var(--color-primary);
+}
+
+input:checked + .dialog-slider:before {
+  transform: translateX(16px);
+}
+
+/* Home Page Styles */
+.home-container {
+  display: flex;
+  flex-direction: column;
+  gap: 6rem;
+  padding-bottom: 6rem;
+}
+
+.home-hero {
+  position: relative;
+  height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.home-hero-background {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.home-hero-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.home-hero-content {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  padding: 1.5rem;
+  background-color: rgba(0, 0, 0, 0.8);
+  border-radius: var(--border-radius);
+  color: white;
+  max-width: 48rem;
+}
+
+.home-hero-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  margin-bottom: 1rem;
+}
+
+.home-hero-subtitle {
+  font-size: 1.125rem;
+  margin-bottom: 1.5rem;
+}
+
+.home-hero-button {
+  padding: 0.75rem 1.5rem;
+  background-color: white;
+  color: black;
+  border: none;
+  border-radius: var(--border-radius);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.home-hero-button:hover {
+  background-color: #e5e5e5;
+}
+
+.home-about-section {
+  padding: 0 1rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.home-about-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+@media (min-width: 768px) {
+  .home-about-grid {
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+  }
+}
+
+.home-about-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.home-section-title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.home-paragraph {
+  font-size: 1.125rem;
+  color: var(--color-muted);
+}
+
+.home-about-image {
+  position: relative;
+  height: 400px;
+  border-radius: var(--border-radius);
+  overflow: hidden;
+}
+
+.home-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.home-services-section {
+  background-color: var(--color-primary);
+  color: var(--color-primary-text);
+  padding: 3rem 1rem;
+}
+
+.home-services-container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.home-services-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+@media (min-width: 768px) {
+  .home-services-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.home-service-card {
+  background-color: var(--color-background);
+  color: var(--color-text);
+  padding: 1.5rem;
+  border-radius: var(--border-radius);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.home-service-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.home-service-desc {
+  color: var(--color-muted);
+}
+
+.home-artists-section {
+  padding: 3rem 1rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.home-artists-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+@media (min-width: 768px) {
+  .home-artists-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.home-artist-card {
+  text-align: center;
+}
+
+.home-artist-image-container {
+  position: relative;
+  height: 300px;
+  width: 300px;
+  margin: 0 auto 1rem;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.home-artist-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.home-artist-name {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.home-artist-specialty {
+  color: var(--color-muted);
+}
+
+/* Tatuajes Page Styles */
+.tatuajes-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.tatuajes-title {
+  font-size: 1.875rem;
+  font-weight: 700;
+}
+
+.tatuajes-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.tatuajes-filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .tatuajes-filter-group {
+    width: auto;
+  }
+}
+
+.tatuajes-filter-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.tatuajes-select {
+  padding: 0.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  background-color: var(--color-background);
+  color: var(--color-text);
+  font-size: 0.875rem;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .tatuajes-select {
+    width: 200px;
+  }
+}
+
+.tatuajes-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .tatuajes-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 768px) {
+  .tatuajes-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.tatuajes-card {
+  overflow: hidden;
+  border-radius: var(--border-radius);
+  background-color: var(--color-background);
+  border: 1px solid var(--color-border);
+}
+
+.tatuajes-card-image {
+  width: 100%;
+  aspect-ratio: 4 / 3; /* Opcional: para mantener una proporción */
+  position: relative;
+}
+
+.tatuajes-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* Ajusta sin recortar */
+  display: block;
+}
+
+.tatuajes-card-footer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  padding: 1rem;
+}
+
+.tatuajes-card-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.tatuajes-info-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.tatuajes-info-value {
+  font-size: 0.875rem;
+  color: var(--color-muted);
+}
+
+/* Diseños Page Styles */
+.disenos-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.disenos-title {
+  font-size: 1.875rem;
+  font-weight: 700;
+}
+
+.disenos-search-container {
+  position: relative;
+  width: 100%;
+  max-width: 300px;
+}
+
+.disenos-search-input {
+  padding: 0.5rem 0.5rem 0.5rem 2rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  background-color: var(--color-background);
+  color: var(--color-text);
+  font-size: 0.875rem;
+  width: 100%;
+}
+
+.disenos-search-icon {
+  position: absolute;
+  left: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-muted);
+}
+
+.disenos-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .disenos-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 768px) {
+  .disenos-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.disenos-card {
+  overflow: hidden;
+  border-radius: var(--border-radius);
+  background-color: var(--color-background);
+  border: 1px solid var(--color-border);
+}
+
+.disenos-card-image {
+  position: relative;
+  height: 300px;
+}
+
+.disenos-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.disenos-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+}
+
+.disenos-card-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.disenos-info-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.disenos-info-value {
+  font-size: 0.875rem;
+  color: var(--color-muted);
+}
+
+.disenos-reserve-button {
+  padding: 0.5rem 1rem;
+  background-color: white;
+  color: black;
+  border: none;
+  border-radius: var(--border-radius);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.disenos-reserve-button:hover {
+  background-color: #e5e5e5;
+}
+
+/* Calendario Page Styles */
+.calendar-container {
+  display: grid;
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .calendar-container {
+    grid-template-columns: 1fr 300px;
+  }
+}
+
+.calendar-card {
+  background-color: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  padding: 1.5rem;
+}
+
+.calendar-header {
+  margin-bottom: 1rem;
+}
+
+.calendar-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.calendar-component {
+  width: 100%;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+}
+
+.calendar-appointments {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.calendar-appointment {
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.calendar-appointment:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.calendar-client {
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+.calendar-artist {
+  font-size: 0.875rem;
+  color: var(--color-muted);
+}
+
+.calendar-empty {
+  color: var(--color-muted);
+}
+
+/* Appointment Page Styles */
+.appointment-container {
+  max-width: 768px;
+  margin: 0 auto;
+}
+
+.appointment-title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+}
+
+.appointment-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.appointment-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .appointment-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.appointment-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.appointment-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.appointment-input,
+.appointment-textarea,
+.appointment-select {
+  padding: 0.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  background-color: var(--color-background);
+  color: var(--color-text);
+  font-size: 0.875rem;
+  width: 100%;
+}
+
+.appointment-textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.appointment-date-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.5rem;
+  text-align: left;
+  background-color: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.appointment-date-button-text {
+  color: var(--color-muted);
+}
+
+.appointment-submit {
+  padding: 0.75rem 1.5rem;
+  background-color: white;
+  color: black;
+  border: none;
+  border-radius: var(--border-radius);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.appointment-submit:hover {
+  background-color: #e5e5e5;
+}

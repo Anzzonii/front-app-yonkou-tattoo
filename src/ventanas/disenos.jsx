@@ -1,0 +1,88 @@
+import { useState, useEffect } from "react"
+
+
+export default function DesignsPage() {
+  const [disenos, setDisenos] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("")
+
+  // UseEffect para cargar los diseños de los tatuajes
+  useEffect(() => {
+    const fetchTattoos = async () => {
+      try {
+        console.log("Hola")
+        const response = await fetch("http://localhost:8080/api/tatuajes");
+        console.log(response)
+        const data = await response.json();
+
+        //Filtro para que solo se guarden los tatuajes que sean diseños
+        const dataTattoos = data.filter(tatu => tatu.diseno === true )
+
+        console.log(dataTattoos);
+
+        setDisenos(dataTattoos);
+      } catch (error) {
+        console.error("Error al cargar tatuajes:", error);
+      }
+    };
+
+    fetchTattoos();
+    }, []);
+
+  return (
+    <div className="disenos-container">
+      <h1 className="disenos-title">Galería de Diseños</h1>
+
+      {/* Apartado para los filtros */}
+      <div className="disenos-search-container">
+        <input
+          type="search"
+          placeholder="Buscar por artista..."
+          className="disenos-search-input"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        <svg
+          className="disenos-search-icon"
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+      </div>
+
+      <div className="disenos-grid">
+
+        {/* MAP DE LOS DISEÑOS */ }
+        {disenos.map((tattoo) => (
+            <div key={tattoo.id} className="tatuajes-card">
+              <div className="tatuajes-card-image">
+                <img
+                  src={`http://localhost:8080/api/imagenes/ver/${tattoo.imagen_id}`}
+                  alt={`Tatuaje por ${tattoo.tatuador.nombre}`}
+                  className="tatuajes-image"
+                />
+              </div>
+              <div className="tatuajes-card-footer">
+                <div className="tatuajes-card-info">
+                  <p className="tatuajes-info-label">Autor</p>
+                  <p className="tatuajes-info-value">{tattoo.tatuador.nombre}</p>
+                </div>
+                <div className="tatuajes-card-info">
+                  <p className="tatuajes-info-label">Estilo</p>
+                  <p className="tatuajes-info-value">{tattoo.estilo}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+      </div>
+    </div>
+  )
+}
