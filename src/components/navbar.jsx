@@ -2,21 +2,25 @@ import { useState } from "react"
 import { LoginDialog } from "./login-dialog"
 import { ConfigDialog } from "./config-dialog"
 import { RegisterDialog } from "./register-dialog"
-import logo from '../assets/yonkouTattoo.png';
+import { CalendarDaysIcon } from '@heroicons/react/24/outline';
+import logo from '../assets/logo.png';
+import { Link } from "react-router-dom"
+import { NavLink } from 'react-router-dom';
+
 
 // Componente personalizado para reemplazar Link
-const NavLink = ({ to, children }) => {
-  const handleClick = (e) => {
-    e.preventDefault()
-    window.location.hash = `#${to}`
-  }
+// const NavLink = ({ to, children }) => {
+//   const handleClick = (e) => {
+//     e.preventDefault()
+//     window.location.hash = `#${to}`
+//   }
 
-  return (
-    <a href={`#${to}`} onClick={handleClick}>
-      {children}
-    </a>
-  )
-}
+//   return (
+//     <a href={`#${to}`} onClick={handleClick}>
+//       {children}
+//     </a>
+//   )
+// }
 
 export default function Navbar({ currentPath }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
@@ -47,36 +51,40 @@ export default function Navbar({ currentPath }) {
   return (
     <header className="navbar-header">
       <div className="navbar-container">
+        
         <div className="navbar-left-section">
-          <NavLink to="/" className="navbar-logo">
-            <div className="navbar-logo-circle">
+          
+          <Link to="/" className="navbar-logo">
+            <div className="navbar-logo-circle w-16 h-16 rounded-full overflow-hidden">
               <img src={logo} alt="logo" className="w-full h-full object-cover" />
             </div>
-          </NavLink>
+          </Link>
+  
 
           <nav className="navbar-nav">
-            <NavLink to="/">
+            <NavLink to="/" className="navbar-nav-button" activeClassName="active">
               <button className={`navbar-nav-button ${currentPath === "/" ? "active" : ""}`}>INICIO</button>
             </NavLink>
-            <NavLink to="/tatuajes">
+            
+            <NavLink to="/tatuajes" className="navbar-nav-button" activeClassName="active">
               <button className={`navbar-nav-button ${currentPath === "/tatuajes" ? "active" : ""}`}>TATUAJES</button>
             </NavLink>
-            <NavLink to="/disenos">
+            <NavLink to="/diseños" className="navbar-nav-button" activeClassName="active">
               <button className={`navbar-nav-button ${currentPath === "/disenos" ? "active" : ""}`}>DISEÑOS</button>
             </NavLink>
           </nav>
         </div>
 
         <div className="navbar-center-section">
-          <span className="dialog-title">Yonkou Tatoo</span>
+          <span className="dialog-title">Yonkou Tattoo</span>
         </div>
 
         <div className="navbar-right-section">
-          <NavLink to="/pedir-cita">
+          <NavLink to="/pedir-cita" className="navbar-nav-button" activeClassName="active">
             <button className={`navbar-nav-button ${currentPath === "/pedir-cita" ? "active" : ""}`}>PEDIR CITA</button>
           </NavLink>
-          <NavLink to="/calendario">
-            <button className={`navbar-nav-button ${currentPath === "/calendario" ? "active" : ""}`}>CAL</button>
+          <NavLink to="/calendario" className="navbar-nav-button" activeClassName="active">
+            <button className={`navbar-nav-button ${currentPath === "/calendario" ? "active" : ""}`}><CalendarDaysIcon className="h-6 w-6 text-white-500" /></button>
           </NavLink>
           <div className="navbar-profile-dropdown">
             <button className="navbar-profile-button" onClick={toggleDropdown}>
@@ -127,6 +135,7 @@ export default function Navbar({ currentPath }) {
             )}
           </div>
         </div>
+        
       </div>
 
       <LoginDialog open={loginOpen} onOpenChange={setLoginOpen} onLogin={handleLogin} onRegister={openRegisterDialog} />

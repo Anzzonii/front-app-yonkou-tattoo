@@ -1,4 +1,7 @@
 import { useRef } from "react"
+import estudio from '../assets/estudio.jpg';
+import logo from '../assets/logo.png';
+import { NavLink } from 'react-router-dom';
 
 export default function HomePage() {
   const ref = useRef(null)
@@ -8,17 +11,17 @@ export default function HomePage() {
       <section ref={ref} className="home-hero">
         <div className="home-hero-background">
           <img
-            src="https://via.placeholder.com/1920x1080?text=Estudio+de+tatuajes"
+            src={estudio}
             alt="Estudio de tatuajes"
             className="home-hero-image"
           />
         </div>
         <div className="home-hero-content">
           <h1 className="home-hero-title">Yonkou Tattoo</h1>
-          <p className="home-hero-subtitle">Frase</p>
-          <button className="home-hero-button" onClick={() => (window.location.hash = "#/pedir-cita")}>
+          <p className="home-hero-subtitle">Un maricon que tatua</p>
+          <NavLink to="/pedir-cita" className="home-hero-button" >
             Reserva tu cita
-          </button>
+          </NavLink>
         </div>
       </section>
 
@@ -36,7 +39,7 @@ export default function HomePage() {
             </p>
           </div>
           <div className="home-about-image">
-            <img src="https://via.placeholder.com/600x800?text=Estudio" alt="Estudio" className="home-image" />
+            <img src={logo} alt="Estudio" className="home-image" />
           </div>
         </div>
       </section>
