@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react"
+import { NavLink } from "react-router-dom";
 
 
 export default function DesignsPage() {
@@ -9,15 +10,12 @@ export default function DesignsPage() {
   useEffect(() => {
     const fetchTattoos = async () => {
       try {
-        console.log("Hola")
         const response = await fetch("http://localhost:8080/api/tatuajes");
-        console.log(response)
         const data = await response.json();
 
         //Filtro para que solo se guarden los tatuajes que sean diseños
         const dataTattoos = data.filter(tatu => tatu.diseno === true )
 
-        console.log(dataTattoos);
 
         setDisenos(dataTattoos);
       } catch (error) {
@@ -78,6 +76,9 @@ export default function DesignsPage() {
                 <div className="tatuajes-card-info">
                   <p className="tatuajes-info-label">Estilo</p>
                   <p className="tatuajes-info-value">{tattoo.estilo}</p>
+                </div>
+                <div className="tatuajes-card-info reservar">
+                  <NavLink to={`/diseños/reserva/${tattoo.id}`} className="disenos-reserva-button">RESERVAR</NavLink>
                 </div>
               </div>
             </div>
