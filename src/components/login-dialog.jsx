@@ -1,4 +1,7 @@
 import { useState } from "react"
+import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth"
+import { auth, googleProvider } from "../firebase"
+
 
 export function LoginDialog({ open, onOpenChange, onLogin, onRegister }) {
   const [email, setEmail] = useState("")
@@ -6,15 +9,69 @@ export function LoginDialog({ open, onOpenChange, onLogin, onRegister }) {
 
   if (!open) return null
 
-  const handleSubmit = (e) => {
+  //Inicio de sesion con correo
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    // Aquí iría la lógica de autenticación
-    onLogin()
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password)
+      const user = userCredential.user
+
+      // si el correo no esta verificado, marca un alert y no inicia sesion
+      if (!user.emailVerified) {
+        alert("Por favor verifica tu correo electrónico antes de iniciar sesión.")
+        return
+      }
+
+      const idToken = await user.getIdToken()
+
+      console.log("mandando token")
+      // Envía el token al backend
+      const response = await fetch("http://localhost:8080/api/auth/firebase", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ idToken })
+      })
+      
+      if (!response.ok) {
+        throw new Error("Error al autenticar con el backend");
+      }
+
+      const data = await response.json();
+
+      // Aquí sí tienes el token JWT que te devolvió el backend
+      localStorage.setItem('token', data.token);
+
+      onLogin()
+    } catch (error) {
+      console.error("Login error", error)
+    }
   }
 
-  const handleGoogleLogin = () => {
-    // Aquí iría la lógica de autenticación con Google
-    onLogin()
+  //Inicio de sesion con firebase
+  const handleGoogleLogin = async () => {
+    try {
+      const result = await signInWithPopup(auth, googleProvider)
+      const idToken = await result.user.getIdToken()
+      // Envía el token al backend
+      const response = await fetch("http://localhost:8080/api/auth/firebase", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ idToken })
+      })
+
+      if (!response.ok) {
+        throw new Error("Error al autenticar con el backend");
+      }
+
+      const data = await response.json();
+
+      // Aquí sí tienes el token JWT que te devolvió el backend
+      localStorage.setItem('token', data.token);
+      onLogin()
+      location.reload
+    } catch (error) {
+      console.error("Google login error", error)
+    }
   }
 
   const handleClose = () => {

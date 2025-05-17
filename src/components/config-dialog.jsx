@@ -1,12 +1,44 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { auth } from "../firebase";
 
 export function ConfigDialog({ open, onOpenChange }) {
+
   const [userData, setUserData] = useState({
     name: "Usuario",
     email: "usuario@ejemplo.com",
     phone: "123456789",
-    notifications: true,
   })
+
+  const cogerUsuario = async (user) => {
+    const response = await fetch(`http://localhost:8080/api/perfiles-usuario/${user.uid}`)
+    const data = await response.json()
+    return data
+    
+  }
+  
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
+      if (user) {
+
+        //USUARIO COGIDO DE LA BASE DE DATOS PARA COGER DATOS SUYOS
+        const userBD = await cogerUsuario(user)
+        setUserData({
+          id: userBD.id,
+          name: userBD.nombre || "Sin nombre",
+          email: user.email,
+          phone: userBD.telefono || "No proporcionado",
+        });
+      } else {
+        setUserData({
+          name: "Usuario",
+          email: "usuario@ejemplo.com",
+          phone: "123456789",
+        });
+      }
+  });
+
+  return () => unsubscribe(); // limpia el listener al desmontar
+  }, []);
 
   if (!open) return null
 
@@ -17,12 +49,34 @@ export function ConfigDialog({ open, onOpenChange }) {
     }))
   }
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    // Aquí iría la lógica para guardar los cambios
-    alert("Configuración guardada correctamente")
-    onOpenChange(false)
-  }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      console.log(userData.id)
+      const response = await fetch(`http://localhost:8080/api/perfiles-usuario/editar/${userData.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          nombre: userData.name,
+          telefono: userData.phone,
+        }),
+      });
+
+      if (response.ok) {
+        alert("Configuración guardada correctamente");
+        onOpenChange(false);
+      } else {
+        const errorData = await response.json();
+        alert(`Error al guardar: ${errorData.message || response.statusText}`);
+      }
+    } catch (error) {
+      alert(`Error de red: ${error.message}`);
+    }
+  };
+
 
   const handleClose = () => {
     onOpenChange(false)
@@ -39,17 +93,6 @@ export function ConfigDialog({ open, onOpenChange }) {
         </div>
         <form onSubmit={handleSubmit} className="dialog-form">
           <div className="dialog-form-group">
-            <label htmlFor="name" className="dialog-label">
-              Nombre completo
-            </label>
-            <input
-              id="name"
-              className="dialog-input"
-              value={userData.name}
-              onChange={(e) => handleChange("name", e.target.value)}
-            />
-          </div>
-          <div className="dialog-form-group">
             <label htmlFor="email" className="dialog-label">
               Correo electrónico
             </label>
@@ -59,6 +102,19 @@ export function ConfigDialog({ open, onOpenChange }) {
               className="dialog-input"
               value={userData.email}
               onChange={(e) => handleChange("email", e.target.value)}
+              readOnly="readonly"
+              style={{ backgroundColor: '#d3d3d3', color: '#444', cursor: 'not-allowed' }}
+            />
+          </div>
+          <div className="dialog-form-group">
+            <label htmlFor="name" className="dialog-label">
+              Nombre
+            </label>
+            <input
+              id="name"
+              className="dialog-input"
+              value={userData.name}
+              onChange={(e) => handleChange("name", e.target.value)}
             />
           </div>
           <div className="dialog-form-group">
@@ -72,20 +128,6 @@ export function ConfigDialog({ open, onOpenChange }) {
               value={userData.phone}
               onChange={(e) => handleChange("phone", e.target.value)}
             />
-          </div>
-          <div className="dialog-switch-group">
-            <label htmlFor="notifications" className="dialog-label">
-              Notificaciones
-            </label>
-            <label className="dialog-switch">
-              <input
-                id="notifications"
-                type="checkbox"
-                checked={userData.notifications}
-                onChange={(e) => handleChange("notifications", e.target.checked)}
-              />
-              <span className="dialog-slider"></span>
-            </label>
           </div>
           <div className="dialog-button-group">
             <button type="submit" className="dialog-primary-button">
