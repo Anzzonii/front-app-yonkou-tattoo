@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { LoginDialog } from "./login-dialog"
 import { ConfigDialog } from "./config-dialog"
 import { RegisterDialog } from "./register-dialog"
@@ -6,6 +6,9 @@ import { CalendarDaysIcon } from '@heroicons/react/24/outline';
 import logo from '../assets/logo.png';
 import { Link } from "react-router-dom"
 import { NavLink } from 'react-router-dom';
+import { jwtDecode } from "jwt-decode";
+import { auth, googleProvider } from "../firebase"
+import { signOut } from "firebase/auth";
 
 
 // Componente personalizado para reemplazar Link
@@ -29,19 +32,51 @@ export default function Navbar({ currentPath }) {
   const [registerOpen, setRegisterOpen] = useState(false)
   const [dropdownOpen, setDropdownOpen] = useState(false)
 
+  //USE EFFECT PARA QUE AL INICIAR COMPRUEBE EL TOKEN
+  useEffect(() => {
+  const token = localStorage.getItem("token");
+
+  if (token) {
+    try {
+      const decoded = jwtDecode(token);
+
+      // Verificar si ha expirado
+      if (decoded.exp * 1000 > Date.now()) {
+
+        setIsLoggedIn(true);
+      } else {
+        // Token expirado
+        localStorage.removeItem("token");
+        setIsLoggedIn(false);
+      }
+    } catch (err) {
+      console.error("Error al decodificar el token:", err);
+      setIsLoggedIn(false);
+    }
+  }
+  }, []);
+
   const handleLogin = () => {
     setIsLoggedIn(true)
     setLoginOpen(false)
   }
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    localStorage.removeItem("token")
+    await signOut(auth); 
     setIsLoggedIn(false)
     setDropdownOpen(false)
+    location.reload()
   }
 
   const openRegisterDialog = () => {
     setLoginOpen(false)
     setRegisterOpen(true)
+  }
+
+  const openLoginDialog = () => {
+    setLoginOpen(true)
+    setRegisterOpen(false)
   }
 
   const toggleDropdown = () => {
@@ -140,7 +175,7 @@ export default function Navbar({ currentPath }) {
 
       <LoginDialog open={loginOpen} onOpenChange={setLoginOpen} onLogin={handleLogin} onRegister={openRegisterDialog} />
       <ConfigDialog open={configOpen} onOpenChange={setConfigOpen} />
-      <RegisterDialog open={registerOpen} onOpenChange={setRegisterOpen} onRegister={handleLogin} />
+      <RegisterDialog open={registerOpen} onOpenChange={setRegisterOpen} onLogin={openLoginDialog} />
     </header>
   )
 }
