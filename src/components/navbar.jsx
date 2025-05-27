@@ -11,26 +11,23 @@ import { auth, googleProvider } from "../firebase"
 import { signOut } from "firebase/auth";
 
 
-// Componente personalizado para reemplazar Link
-// const NavLink = ({ to, children }) => {
-//   const handleClick = (e) => {
-//     e.preventDefault()
-//     window.location.hash = `#${to}`
-//   }
-
-//   return (
-//     <a href={`#${to}`} onClick={handleClick}>
-//       {children}
-//     </a>
-//   )
-// }
-
 export default function Navbar({ currentPath }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [loginOpen, setLoginOpen] = useState(false)
   const [configOpen, setConfigOpen] = useState(false)
   const [registerOpen, setRegisterOpen] = useState(false)
   const [dropdownOpen, setDropdownOpen] = useState(false)
+  const [toggleAdmin, setToggleAdmin] = useState(false)
+  const [user, setUser] = useState(null);
+
+
+
+  const cogerUsuario = async (user) => {
+    const response = await fetch(`http://localhost:8080/api/perfiles-usuario/${user.uid}`)
+    const data = await response.json()
+    setUser(data)
+    
+  }
 
   //USE EFFECT PARA QUE AL INICIAR COMPRUEBE EL TOKEN
   useEffect(() => {
@@ -39,10 +36,10 @@ export default function Navbar({ currentPath }) {
   if (token) {
     try {
       const decoded = jwtDecode(token);
-
+      
       // Verificar si ha expirado
       if (decoded.exp * 1000 > Date.now()) {
-
+        cogerUsuario(decoded)
         setIsLoggedIn(true);
       } else {
         // Token expirado
@@ -64,8 +61,6 @@ export default function Navbar({ currentPath }) {
   const handleLogout = async () => {
     localStorage.removeItem("token")
     await signOut(auth); 
-    setIsLoggedIn(false)
-    setDropdownOpen(false)
     location.reload()
   }
 
@@ -115,9 +110,18 @@ export default function Navbar({ currentPath }) {
         </div>
 
         <div className="navbar-right-section">
-          <NavLink to="/pedir-cita" className="navbar-nav-button" activeClassName="active">
-            <button className={`navbar-nav-button ${currentPath === "/pedir-cita" ? "active" : ""}`}>PEDIR CITA</button>
-          </NavLink>
+          
+          {user && (!user.esTatuador ? 
+            <NavLink to="/pedir-cita" className="navbar-nav-button" activeClassName="active">
+              <button className={`navbar-nav-button ${currentPath === "/pedir-cita" ? "active" : ""}`}>PEDIR CITA</button>
+            </NavLink>
+            :
+            <NavLink to="/gestionar-citas" className="navbar-nav-button" activeClassName="active">
+              <button className={`navbar-nav-button ${currentPath === "/pedir-cita" ? "active" : ""}`}>GESTIONAR CITAS</button>
+            </NavLink>
+          )}
+
+          
           <NavLink to="/calendario" className="navbar-nav-button" activeClassName="active">
             <button className={`navbar-nav-button ${currentPath === "/calendario" ? "active" : ""}`}><CalendarDaysIcon className="h-6 w-6 text-white-500" /></button>
           </NavLink>
@@ -161,6 +165,26 @@ export default function Navbar({ currentPath }) {
                     >
                       Configuración
                     </button>
+                    
+                    {/* Submenu de administracion */}
+                    {user && (user.esTatuador ? 
+                    <div className="navbar-dropdown-submenu">
+                      <button className="navbar-dropdown-item" onClick={() => {
+                        setToggleAdmin(!toggleAdmin)}}>
+                        Administración ▸
+                      </button>
+                      {toggleAdmin ? (
+                        <div className="navbar-submenu">
+                          <button className="navbar-dropdown-item navbar-item-grey-bg">Usuarios</button>
+                          <button className="navbar-dropdown-item navbar-item-grey-bg">Permisos</button>
+                        </div>)
+                        :
+                        (<></>)
+                      }
+                    </div>
+                    :
+                    <></>
+                    )}
                     <button className="navbar-dropdown-item" onClick={handleLogout}>
                       Cerrar Sesión
                     </button>

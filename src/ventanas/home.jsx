@@ -18,7 +18,7 @@ export default function HomePage() {
         </div>
         <div className="home-hero-content">
           <h1 className="home-hero-title">Yonkou Tattoo</h1>
-          <p className="home-hero-subtitle">Un maricon que tatua</p>
+          <p className="home-hero-subtitle">Tinta hecha arte en su mayor esplandor</p>
           <NavLink to="/pedir-cita" className="home-hero-button" >
             Reserva tu cita
           </NavLink>

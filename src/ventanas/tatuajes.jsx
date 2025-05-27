@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react"
+import { NavLink } from 'react-router-dom';
 
 // Datos de ejemplo
 
@@ -14,14 +15,11 @@ export default function TattoosPage() {
   useEffect(() => {
     const fetchTattoos = async () => {
       try {
-        console.log("Hola")
         const response = await fetch("http://localhost:8080/api/tatuajes");
-        console.log(response)
         const data = await response.json();
 
         const dataTattoos = data.filter(tatu => tatu.diseno === false )
 
-        console.log(dataTattoos);
 
         setTattoos(dataTattoos); // Aquí guardas los tatuajes en el estado
       } catch (error) {
@@ -40,7 +38,30 @@ export default function TattoosPage() {
 
   return (
     <div className="tatuajes-container">
-      <h1 className="tatuajes-title">Galería de Tatuajes</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="tatuajes-title">Galería de Tatuajes</h1>
+        <NavLink to='/tatuajes/subir-tatuaje' className="disenos-reserva-button">
+          <button className="upload-button" onClick={() => (window.location.hash = "#/subir-tatuaje")}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="mr-2"
+            >
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            Subir Tatuaje
+          </button>
+        </NavLink>
+      </div>
 
       <div className="tatuajes-filters">
         <div className="tatuajes-filter-group">
@@ -85,7 +106,7 @@ export default function TattoosPage() {
           <div key={tattoo.id} className="tatuajes-card">
             <div className="tatuajes-card-image">
               <img
-                src={`http://localhost:8080/api/imagenes/ver/${tattoo.imagen_id}`}
+                src={`${tattoo.imagen}`}
                 alt={`Tatuaje por ${tattoo.tatuador.nombre}`}
                 className="tatuajes-image"
               />

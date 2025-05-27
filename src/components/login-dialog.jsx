@@ -40,8 +40,7 @@ export function LoginDialog({ open, onOpenChange, onLogin, onRegister }) {
 
       // Aquí sí tienes el token JWT que te devolvió el backend
       localStorage.setItem('token', data.token);
-
-      onLogin()
+      location.reload()
     } catch (error) {
       console.error("Login error", error)
     }
@@ -67,8 +66,7 @@ export function LoginDialog({ open, onOpenChange, onLogin, onRegister }) {
 
       // Aquí sí tienes el token JWT que te devolvió el backend
       localStorage.setItem('token', data.token);
-      onLogin()
-      location.reload
+      location.reload()
     } catch (error) {
       console.error("Google login error", error)
     }
