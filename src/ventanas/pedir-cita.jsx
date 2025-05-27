@@ -1,8 +1,42 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { useAppContext } from "../context/appProvider"
+import { jwtDecode } from "jwt-decode"
 
 export default function AppointmentPage() {
+  const { tatuadores } = useAppContext()
+  
+  const [usuarioActual, setUsuarioActual] = useState(null)
   const [date, setDate] = useState(null)
-  const [showCalendar, setShowCalendar] = useState(false)
+  const [time, setTime] = useState(null)
+
+  const [preview, setPreview] = useState(null)
+
+  useEffect(() => {
+      
+      const cogerUsuario = async (user) => {
+        const response = await fetch(`http://localhost:8080/api/perfiles-usuario/${user.uid}`)
+        const data = await response.json()
+        setUsuarioActual(data)
+      }
+  
+      // OBTENER EL USUARIO ACTUAL
+      const token = localStorage.getItem("token")
+      if(token){
+        const user = jwtDecode(token)
+        cogerUsuario(user)
+      }
+    }, [])
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setPreview(reader.result)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -10,43 +44,40 @@ export default function AppointmentPage() {
     alert("Cita solicitada correctamente")
   }
 
-  const formatDate = (date) => {
-    if (!date) return null
-    return new Intl.DateTimeFormat("es-ES", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    }).format(date)
-  }
-
   return (
     <div className="appointment-container">
       <h1 className="appointment-title">Solicitar Cita</h1>
 
       <form onSubmit={handleSubmit} className="appointment-form">
+
         <div className="appointment-grid">
           <div className="appointment-form-group">
-            <label htmlFor="name" className="appointment-label">
-              Nombre
-            </label>
-            <input id="name" className="appointment-input" required />
+              <label htmlFor="date" className="appointment-label">Fecha deseada</label>
+              <input
+              type="date"
+              value={date ? date.toISOString().split("T")[0] : ""}
+              onChange={(e) => setDate(new Date(e.target.value))}
+              className="appointment-input"
+              required
+              />
           </div>
-
           <div className="appointment-form-group">
-            <label htmlFor="email" className="appointment-label">
-              Email
-            </label>
-            <input id="email" type="email" className="appointment-input" required />
+            <label htmlFor="time" className="appointment-label">Hora deseada</label>
+            <select
+              value={time}
+              onChange={(e) => setTime(e.target.value)}
+              className="appointment-input w-full"
+              required
+            >
+              <option value="">Selecciona una hora</option>
+              {generateTimeOptions("09:00", "21:00", 60).map((hour) => (
+                <option key={hour} value={hour}>{hour}</option>
+              ))}
+            </select>
           </div>
         </div>
-
+        
         <div className="appointment-grid">
-          <div className="appointment-form-group">
-            <label htmlFor="phone" className="appointment-label">
-              Teléfono
-            </label>
-            <input id="phone" type="tel" className="appointment-input" required />
-          </div>
 
           <div className="appointment-form-group">
             <label htmlFor="artist" className="appointment-label">
@@ -54,53 +85,14 @@ export default function AppointmentPage() {
             </label>
             <select id="artist" className="appointment-select">
               <option value="">Selecciona un artista</option>
-              <option value="carlos">Carlos</option>
-              <option value="maria">María</option>
-              <option value="juan">Juan</option>
+                {tatuadores.map( (tatuador) => (   
+                  <option key={tatuador.id} value={tatuador.nombre}>{tatuador.nombre}</option>
+
+                ))} 
             </select>
           </div>
         </div>
 
-        <div className="appointment-form-group">
-          <label htmlFor="date" className="appointment-label">
-            Fecha deseada
-          </label>
-          <button type="button" className="appointment-date-button" onClick={() => setShowCalendar(!showCalendar)}>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-
-              {/*Icono de calendario para la fecha*/ }
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-              <line x1="16" y1="2" x2="16" y2="6"></line>
-              <line x1="8" y1="2" x2="8" y2="6"></line>
-              <line x1="3" y1="10" x2="21" y2="10"></line>
-            </svg>
-            <span className="appointment-date-button-text">{date ? formatDate(date) : "Selecciona una fecha"}</span>
-          </button>
-          {showCalendar && (
-            <div className="calendar-popup">
-              {/* Aquí iría un componente de calendario */}
-              <div className="calendar-simple">
-                <input
-                  type="date"
-                  onChange={(e) => {
-                    setDate(new Date(e.target.value))
-                    setShowCalendar(false)
-                  }}
-                />
-              </div>
-            </div>
-          )}
-        </div>
 
         <div className="appointment-form-group">
           <label htmlFor="description" className="appointment-label">
@@ -114,17 +106,61 @@ export default function AppointmentPage() {
           />
         </div>
 
+
+              {/* IMAGEN */}
         <div className="appointment-form-group">
-          <label htmlFor="reference" className="appointment-label">
-            Imagen de referencia (opcional)
+          <label htmlFor="imagen" className="appointment-label">
+            Imagen de referencia
           </label>
-          <input id="reference" type="file" accept="image/*" className="appointment-input" />
+          
+          <input id="reference" 
+          type="file" 
+          accept="image/*" 
+          className="appointment-input file:py-2 file:px-4 file:border file:border-gray-300
+                      file:rounded-lg file:bg-gray-600 file:text-white file:font-semibold
+                      file:cursor-pointer hover:file:bg-gray-700" 
+          onChange={handleFileChange} 
+          required/>
+
+          {preview && (
+            <div className="mt-2">
+              <img
+                src={preview}
+                alt="Vista previa"
+                className="max-w-xs rounded border"
+              />
+            </div>
+          )}
         </div>
 
-        <button type="submit" className="appointment-submit">
+
+        <button type="submit" className="upload-submit-button">
           Solicitar Cita
         </button>
       </form>
     </div>
   )
+}
+
+function generateTimeOptions(start, end, intervalMinutes) {
+  const options = [];
+  const [startHour, startMinute] = start.split(":").map(Number);
+  const [endHour, endMinute] = end.split(":").map(Number);
+
+  let current = new Date();
+  current.setHours(startHour, startMinute, 0, 0);
+
+  const endTime = new Date();
+  endTime.setHours(endHour, endMinute, 0, 0);
+
+  while (current <= endTime) {
+    const hours = current.getHours().toString().padStart(2, "0");
+    const minutes = current.getMinutes().toString().padStart(2, "0");
+    if (`${hours}:${minutes}` !== "14:00" && `${hours}:${minutes}` !== "15:00") {
+      options.push(`${hours}:${minutes}`);
+    }
+    current.setMinutes(current.getMinutes() + intervalMinutes);
+  }
+
+  return options;
 }

@@ -1,19 +1,46 @@
 import { useState, useEffect } from "react"
 import { useParams } from "react-router-dom"
+import { jwtDecode } from "jwt-decode"
 
 export default function AppointmentPage() {
+  
+  const [usuarioActual, setUsuarioActual] = useState(null)
+
   const [date, setDate] = useState(null)
+  const [time, setTime] = useState(null)
   const [diseno, setDiseno] = useState(null)
+
+  const [citaData, setCitaData] = useState({
+    usuario: "",
+    tatuador: "",
+    fecha: "",
+    hora: "",
+    descripcion: "",
+    imagen: "",
+    aceptada: false
+  })
 
   const { id } = useParams()
 
   useEffect(() => {
+    
+    const cogerUsuario = async (user) => {
+      const response = await fetch(`http://localhost:8080/api/perfiles-usuario/${user.uid}`)
+      const data = await response.json()
+      setUsuarioActual(data)
+    }
+
+    // OBTENER EL USUARIO ACTUAL
+    const token = localStorage.getItem("token")
+    if(token){
+      const user = jwtDecode(token)
+      cogerUsuario(user)
+    }
+    
     const fetchDesign = async () => {
-        console.log(id)
       try {
         const res = await fetch(`http://localhost:8080/api/tatuajes/${id}`);
         const data = await res.json()
-        console.log(data);
         setDiseno(data)
       } catch (error) {
         console.error("Error al cargar el diseño:", error)
@@ -25,9 +52,38 @@ export default function AppointmentPage() {
     }
   }, [])
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    alert("Cita solicitada correctamente")
+    const descripcion = document.getElementById("description").value;
+
+    const citaPayload = {
+      usuario: usuarioActual,
+      tatuador: diseno.tatuador,
+      fecha: date.toISOString().split("T")[0],
+      hora: time,
+      descripcion: descripcion,
+      imagen: diseno.imagen,
+      estado: "pendiente"
+    } 
+
+    try {
+      const res = await fetch("http://localhost:8080/api/citas/crear", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(citaPayload)
+      });
+
+      if (!res.ok) {
+        throw new Error("Error al registrar la cita");
+      }
+
+      alert("Cita solicitada correctamente");
+    } catch (error) {
+      console.error("Error al enviar la cita:", error);
+      alert("Hubo un error al solicitar la cita.");
+    }
   }
 
   return (
@@ -40,61 +96,63 @@ export default function AppointmentPage() {
         
             <form onSubmit={handleSubmit} className="appointment-form">
                 {/* Formulario original intacto */}
-                <div className="appointment-grid">
-                <div className="appointment-form-group">
-                    <label htmlFor="name" className="appointment-label">Nombre</label>
-                    <input id="name" className="appointment-input" required />
-                </div>
-                <div className="appointment-form-group">
-                    <label htmlFor="email" className="appointment-label">Email</label>
-                    <input id="email" type="email" className="appointment-input" required />
-                </div>
-                </div>
 
-                <div className="appointment-grid">
-                <div className="appointment-form-group">
-                    <label htmlFor="phone" className="appointment-label">Teléfono</label>
-                    <input id="phone" type="tel" className="appointment-input" required />
-                </div>
-                <div className="appointment-form-group">
-                    {/* Input del tatuador que realizará el tatuaje solo lectura, es el mismo que hace diseño */}
-                    <label htmlFor="artist" className="appointment-label">Tatuador <span className="text-xs text-gray-500 ml-2">(Los diseños los hace el responsable del mismo)</span></label>
-                    <input type="text" id="artista" className="appointment-input" value={diseno.tatuador.nombre || ""} readOnly="readonly"/>
-                </div>
-                </div>
-
-                <div className="appointment-grid">
-                <div className="appointment-form-group">
-                    <label htmlFor="date" className="appointment-label">Fecha deseada</label>
-                    <input
-                    type="date"
-                    value={date ? date.toISOString().split("T")[0] : ""}
-                    onChange={(e) => setDate(new Date(e.target.value))}
-                    className="appointment-input"
-                    required
-                    />
-                </div>
-                </div>
                 <div className="flex justify-center items-center">
                     <div className="bg-white p-4 rounded-xl shadow-md border w-fit">
                         <img
-                        src={`http://localhost:8080/api/imagenes/ver/${diseno.imagen_id}`}
+                        src={`${diseno.imagen}`}
                         alt={diseno.titulo}
                         className="rounded-lg max-w-xs object-contain"
                         />
                         <p className="text-center text-sm text-gray-600 mt-2">{diseno.titulo}</p>
                     </div>
                 </div>
-                <div className="appointment-form-group">
-                <label htmlFor="description" className="appointment-label">Detalles/Cambios para sugerir</label>
-                <textarea
-                    id="description"
-                    placeholder="Describe cualquier cambio o detalle que quieras quitar/añadir o reemplazar en el tatuaje"
-                    className="appointment-textarea"
-                />
+
+                <div className="appointment-grid">
+                  <div className="appointment-form-group">
+                      <label htmlFor="date" className="appointment-label">Fecha deseada</label>
+                      <input
+                      type="date"
+                      value={date ? date.toISOString().split("T")[0] : ""}
+                      onChange={(e) => setDate(new Date(e.target.value))}
+                      className="appointment-input"
+                      required
+                      />
+                  </div>
+                  <div className="appointment-form-group">
+                    <label htmlFor="time" className="appointment-label">Hora deseada</label>
+                    <select
+                      value={time}
+                      onChange={(e) => setTime(e.target.value)}
+                      className="appointment-input w-full"
+                      required
+                    >
+                      <option value="">Selecciona una hora</option>
+                      {generateTimeOptions("09:00", "21:00", 60).map((hour) => (
+                        <option key={hour} value={hour}>{hour}</option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
 
-                <button type="submit" className="appointment-submit">
+                <div className="appointment-grid">
+                  <div className="appointment-form-group">
+                      {/* Input del tatuador que realizará el tatuaje solo lectura, es el mismo que hace diseño */}
+                      <label htmlFor="artist" className="appointment-label">Tatuador <span className="text-xs text-gray-500 ml-2">(Los diseños los hace el responsable del mismo)</span></label>
+                      <input type="text" id="artista" className="appointment-input" value={diseno.tatuador.nombre || ""} readOnly="readonly"/>
+                  </div>
+                </div>
+
+                <div className="appointment-form-group">
+                  <label htmlFor="description" className="appointment-label">Detalles/Cambios para sugerir</label>
+                  <textarea
+                      id="description"
+                      placeholder="Describe cualquier cambio o detalle que quieras quitar, añadir o reemplazar en el tatuaje"
+                      className="appointment-textarea"
+                  />
+                </div>
+
+                <button type="submit" className="upload-submit-button">
                 Solicitar Reserva
                 </button>
             </form>
@@ -102,4 +160,27 @@ export default function AppointmentPage() {
       )}
     </div>
   )
+}
+
+function generateTimeOptions(start, end, intervalMinutes) {
+  const options = [];
+  const [startHour, startMinute] = start.split(":").map(Number);
+  const [endHour, endMinute] = end.split(":").map(Number);
+
+  let current = new Date();
+  current.setHours(startHour, startMinute, 0, 0);
+
+  const endTime = new Date();
+  endTime.setHours(endHour, endMinute, 0, 0);
+
+  while (current <= endTime) {
+    const hours = current.getHours().toString().padStart(2, "0");
+    const minutes = current.getMinutes().toString().padStart(2, "0");
+    if (`${hours}:${minutes}` !== "14:00" && `${hours}:${minutes}` !== "15:00") {
+      options.push(`${hours}:${minutes}`);
+    }
+    current.setMinutes(current.getMinutes() + intervalMinutes);
+  }
+
+  return options;
 }
