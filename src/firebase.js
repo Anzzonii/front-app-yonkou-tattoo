@@ -1,6 +1,7 @@
 import { initializeApp } from "firebase/app"
 import { getAuth, GoogleAuthProvider } from "firebase/auth"
 
+//Configuracion de firebase
 const firebaseConfig = {
   apiKey: "AIzaSyAzGALlhr74CCcmM2_sHQWO7nTUdx1B_Vo",
   authDomain: "yonkou-tattoo.firebaseapp.com",
