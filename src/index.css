@@ -750,6 +750,12 @@ input:checked + .dialog-slider:before {
   margin-top: 1rem;          /* Espacio superior opcional */
 }
 
+.tatuajes-card-info.borrar {
+  grid-column: 1 / -1;       /* Ocupa toda la fila */
+  justify-self: right;      /* Centra el contenido */
+  margin-top: 1rem;          /* Espacio superior opcional */
+}
+
 .tatuajes-info-label {
   font-size: 0.875rem;
   font-weight: 500;
@@ -864,6 +870,22 @@ input:checked + .dialog-slider:before {
   cursor: pointer;
   transition: background-color 0.2s;
 }
+
+.tatuajes-borrar-button {
+  padding: 0.5rem 1rem;
+  background-color: black;
+  color: white;
+  border: none;
+  border-radius: var(--border-radius);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.tatuajes-borrar-button:hover {
+  background-color: rgb(59, 59, 59);
+}
+
 
 
 .disenos-reserva-button:hover {
@@ -1560,4 +1582,235 @@ input:checked + .dialog-slider:before {
 .calendar-simple {
   display: flex;
   justify-content: center;
+}
+
+/* Archivo CSS responsive completo */
+@import "tailwindcss";
+
+/* Reset básico */
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+/* Variables globales */
+:root {
+  --color-background: #ffffff;
+  --color-text: #0a0a0a;
+  --color-primary: #171717;
+  --color-primary-text: #fafafa;
+  --color-secondary: #f5f5f5;
+  --color-secondary-text: #171717;
+  --color-muted: #737373;
+  --color-border: #e5e5e5;
+  --color-input: #e5e5e5;
+  --color-focus: #171717;
+  --color-error: #ef4444;
+  --border-radius: 0.5rem;
+}
+
+/* Tema oscuro */
+.dark {
+  --color-background: #0a0a0a;
+  --color-text: #fafafa;
+  --color-primary: #fafafa;
+  --color-primary-text: #171717;
+  --color-secondary: #262626;
+  --color-secondary-text: #fafafa;
+  --color-muted: #a3a3a3;
+  --color-border: #262626;
+  --color-input: #262626;
+  --color-focus: #d4d4d4;
+}
+
+/* Media Queries específicas para móvil */
+@media (max-width: 767px) {
+  /* Ajustes generales para móvil */
+  .main-container {
+    padding: 1rem;
+  }
+
+  /* Hero Section - Ajustes específicos para móvil */
+  .home-hero {
+    height: 60vh;
+    position: relative;
+  }
+
+  .home-hero-title {
+    font-size: 1.8rem;
+    color: white !important; /* Fuerza el color blanco */
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8); /* Mejora legibilidad */
+  }
+
+  .home-hero-subtitle {
+    font-size: 1rem;
+    color: #f0f0f0;
+  }
+
+  .home-hero-content {
+    padding: 1rem;
+    width: 90%;
+    margin: 0 auto;
+    background-color: rgba(0, 0, 0, 0.7);
+  }
+
+  /* Navbar - Ajustes para móvil */
+  .navbar-container {
+    flex-direction: row;
+    height: 3.5rem;
+    padding: 0 0.5rem;
+  }
+
+  .navbar-nav {
+    display: none; /* Ocultamos los botones de navegación en móvil */
+  }
+
+  .navbar-logo {
+    gap: 0.3rem;
+  }
+
+  .navbar-logo-circle {
+    height: 2rem;
+    width: 2rem;
+  }
+
+  .navbar-logo-circle span {
+    font-size: 0.75rem;
+  }
+
+  /* Menú hamburguesa para móvil */
+  .mobile-menu-button {
+    display: block !important;
+    background: none;
+    border: none;
+    color: var(--color-text);
+    font-size: 1.5rem;
+    cursor: pointer;
+  }
+
+  .mobile-menu {
+    position: fixed;
+    top: 3.5rem;
+    left: 0;
+    right: 0;
+    background-color: var(--color-background);
+    border-bottom: 1px solid var(--color-border);
+    z-index: 100;
+    padding: 1rem;
+    display: none;
+  }
+
+  .mobile-menu.active {
+    display: block;
+  }
+
+  .mobile-menu .navbar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  /* Ajustes para las secciones de contenido */
+  .home-about-grid,
+  .home-services-grid,
+  .home-artists-grid,
+  .tatuajes-grid,
+  .disenos-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .home-section-title {
+    font-size: 1.5rem;
+  }
+
+  .home-paragraph {
+    font-size: 1rem;
+  }
+
+  /* Ajustes para las cards */
+  .home-service-card,
+  .home-artist-card,
+  .tatuajes-card,
+  .disenos-card {
+    padding: 1rem;
+  }
+
+  .home-artist-image-container {
+    width: 200px;
+    height: 200px;
+  }
+
+  /* Formularios en móvil */
+  .appointment-form,
+  .upload-form {
+    gap: 1rem;
+  }
+
+  .appointment-grid,
+  .upload-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Footer de cards en móvil */
+  .tatuajes-card-footer,
+  .disenos-card-footer {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  /* Calendario en móvil */
+  .calendar-container {
+    grid-template-columns: 1fr !important;
+  }
+
+  .calendar-card {
+    padding: 1rem;
+  }
+
+  /* Botones en móvil */
+  .home-hero-button,
+  .disenos-reserva-button,
+  .tatuajes-borrar-button,
+  .appointment-submit,
+  .upload-submit-button {
+    width: 100%;
+    padding: 0.75rem;
+  }
+}
+
+/* Media Queries específicas para iPhone 14 (390px de ancho) */
+@media (max-width: 390px) {
+  .home-hero-title {
+    font-size: 1.5rem;
+  }
+
+  .home-hero-subtitle {
+    font-size: 0.9rem;
+  }
+
+  .navbar-container {
+    padding: 0 0.25rem;
+  }
+
+  .navbar-profile-button {
+    width: 2rem;
+    height: 2rem;
+  }
+}
+
+/* Clases adicionales necesarias */
+.mobile-menu-button {
+  display: none; /* Oculto por defecto en desktop */
+}
+
+/* Asegurar que el logo y el icono estén alineados en móvil */
+.navbar-left-section {
+  align-items: center;
+}
+
+/* Ajustes para el tema oscuro en móvil */
+.dark .home-hero-title,
+.dark .home-hero-subtitle {
+  color: white !important;
 }
