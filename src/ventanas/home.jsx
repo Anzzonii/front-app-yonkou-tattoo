@@ -3,6 +3,7 @@ import estudio from '../assets/estudio.jpg';
 import logo from '../assets/logo.png';
 import { NavLink } from 'react-router-dom';
 
+//VENTANA HOME PARA EL INICIO DE LA APP
 export default function HomePage() {
   const ref = useRef(null)
 
@@ -69,7 +70,7 @@ export default function HomePage() {
             <div key={artist} className="home-artist-card">
               <div className="home-artist-image-container">
                 <img
-                  src={`https://via.placeholder.com/300x300?text=Artista${artist}`}
+                  src={``}
                   alt={`Artista ${artist}`}
                   className="home-artist-image"
                 />
