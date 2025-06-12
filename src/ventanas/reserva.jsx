@@ -1,37 +1,37 @@
 import { useState, useEffect } from "react"
 import { useParams } from "react-router-dom"
 import { jwtDecode } from "jwt-decode"
+import { useNavigate } from "react-router-dom"
 
-export default function AppointmentPage() {
+//Ventana con formulario para la reserva de las citas
+export default function Reserva() {
   
   const [usuarioActual, setUsuarioActual] = useState(null)
+
+  const token = localStorage.getItem("token")
 
   const [date, setDate] = useState(null)
   const [time, setTime] = useState(null)
   const [diseno, setDiseno] = useState(null)
 
-  const [citaData, setCitaData] = useState({
-    usuario: "",
-    tatuador: "",
-    fecha: "",
-    hora: "",
-    descripcion: "",
-    imagen: "",
-    aceptada: false
-  })
+  const navigate = useNavigate();
 
   const { id } = useParams()
 
   useEffect(() => {
     
     const cogerUsuario = async (user) => {
-      const response = await fetch(`http://localhost:8080/api/perfiles-usuario/${user.uid}`)
+      const response = await fetch(`http://localhost:8080/api/perfiles-usuario/${user.uid}`, {
+        headers: { 
+          "Content-Type": "application/json",
+          'Authorization': `Bearer ${token}` 
+        },
+      })
       const data = await response.json()
       setUsuarioActual(data)
     }
 
     // OBTENER EL USUARIO ACTUAL
-    const token = localStorage.getItem("token")
     if(token){
       const user = jwtDecode(token)
       cogerUsuario(user)
@@ -39,7 +39,12 @@ export default function AppointmentPage() {
     
     const fetchDesign = async () => {
       try {
-        const res = await fetch(`http://localhost:8080/api/tatuajes/${id}`);
+        const res = await fetch(`http://localhost:8080/api/tatuajes/${id}`, {
+          headers: { 
+            "Content-Type": "application/json",
+            'Authorization': `Bearer ${token}` 
+          },
+        });
         const data = await res.json()
         setDiseno(data)
       } catch (error) {
@@ -65,12 +70,13 @@ export default function AppointmentPage() {
       imagen: diseno.imagen,
       estado: "pendiente"
     } 
-
+    console.log(citaPayload)
     try {
       const res = await fetch("http://localhost:8080/api/citas/crear", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          'Authorization': `Bearer ${token}` 
         },
         body: JSON.stringify(citaPayload)
       });
@@ -80,6 +86,7 @@ export default function AppointmentPage() {
       }
 
       alert("Cita solicitada correctamente");
+      navigate("/citas")
     } catch (error) {
       console.error("Error al enviar la cita:", error);
       alert("Hubo un error al solicitar la cita.");
@@ -95,8 +102,6 @@ export default function AppointmentPage() {
       
         
             <form onSubmit={handleSubmit} className="appointment-form">
-                {/* Formulario original intacto */}
-
                 <div className="flex justify-center items-center">
                     <div className="bg-white p-4 rounded-xl shadow-md border w-fit">
                         <img
@@ -137,7 +142,6 @@ export default function AppointmentPage() {
 
                 <div className="appointment-grid">
                   <div className="appointment-form-group">
-                      {/* Input del tatuador que realizará el tatuaje solo lectura, es el mismo que hace diseño */}
                       <label htmlFor="artist" className="appointment-label">Tatuador <span className="text-xs text-gray-500 ml-2">(Los diseños los hace el responsable del mismo)</span></label>
                       <input type="text" id="artista" className="appointment-input" value={diseno.tatuador.nombre || ""} readOnly="readonly"/>
                   </div>

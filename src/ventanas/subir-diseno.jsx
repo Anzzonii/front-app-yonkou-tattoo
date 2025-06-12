@@ -2,7 +2,11 @@ import { useState } from "react"
 import { useAppContext } from "../context/appProvider"
 import { useNavigate } from "react-router-dom"
 
+//FORMULARIO PARA SUBIR UN DISEÑO
 export default function SubirDiseno() {
+
+  const token = localStorage.getItem("token")
+  
   const { tatuadores } = useAppContext()
   const [formData, setFormData] = useState({
     title: "",
@@ -51,7 +55,11 @@ export default function SubirDiseno() {
       const imageFormData = new FormData();
       imageFormData.append("file", formData.image)
 
+      //Primero sube la imagen y posteriormente el diseño
       const imageRes = await fetch("http://localhost:8080/api/cloudinary/upload", {
+        headers: {
+          'Authorization': `Bearer ${token}` 
+        },
         method: "POST",
         body: imageFormData
       })
@@ -64,12 +72,10 @@ export default function SubirDiseno() {
 
       console.log(imagenUrl);
 
-
-      // 1. Crear el tatuaje sin imagen
       const tatuajePayload = {
         titulo: formData.title,
         estilo: formData.type,
-        tatuador: tatuadores.find((tatuador) => tatuador.id === parseInt(formData.artist)), // debe estar ya como { id: ... } en formData
+        tatuador: tatuadores.find((tatuador) => tatuador.id === parseInt(formData.artist)),
         imagen: imagenUrl,
         diseno: true,
       };
@@ -79,6 +85,7 @@ export default function SubirDiseno() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          'Authorization': `Bearer ${token}` 
         },
         body: JSON.stringify(tatuajePayload),
       });
@@ -92,7 +99,7 @@ export default function SubirDiseno() {
       navigate("/diseños")
     } catch (error) {
       console.error("Error al subir el tatuaje:", error);
-      alert("Ocurrió un error. Revisa la consola.");
+      alert("Formato de imagen inválido o tamaño muy grande.");
     }
   };
 

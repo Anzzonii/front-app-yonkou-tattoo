@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react"
 import { useAppContext } from "../context/appProvider"
 import { jwtDecode } from "jwt-decode"
+import { useNavigate } from "react-router-dom"
 
-export default function AppointmentPage() {
+//FORMULARIO PARA PEDIR LA CITA SIN DISEÑO
+export default function PedirCita() {
   const { tatuadores } = useAppContext()
   
   const [usuarioActual, setUsuarioActual] = useState(null)
@@ -11,10 +13,36 @@ export default function AppointmentPage() {
 
   const [preview, setPreview] = useState(null)
 
+  const token = localStorage.getItem("token")
+
+  const navigate = useNavigate();
+
+  const uploadImageToCloudinary = async (file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "app_preset");
+
+    const res = await fetch(`http://localhost:8080/api/cloudinary/upload`, {
+      headers: {
+        'Authorization': `Bearer ${token}` 
+      },
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await res.json();
+    return data.secure_url;
+  };
+
   useEffect(() => {
       
       const cogerUsuario = async (user) => {
-        const response = await fetch(`http://localhost:8080/api/perfiles-usuario/${user.uid}`)
+        const response = await fetch(`http://localhost:8080/api/perfiles-usuario/${user.uid}`, {
+          headers: { 
+            "Content-Type": "application/json",
+            'Authorization': `Bearer ${token}` 
+          },
+        })
         const data = await response.json()
         setUsuarioActual(data)
       }
@@ -38,12 +66,51 @@ export default function AppointmentPage() {
     }
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    // Aquí iría la lógica para enviar el formulario
-    alert("Cita solicitada correctamente")
-  }
+    const descripcion = document.getElementById("description").value;
 
+    const tatuadorId = document.getElementById("artist").value;
+    const tatuador = tatuadores.find(t => t.id.toString() === tatuadorId);
+
+    const file = document.getElementById("reference").files[0];
+
+    //Sube la imagen primero
+    const imagenUrl = await uploadImageToCloudinary(file);
+
+    const citaPayload = {
+      usuario: usuarioActual,
+      tatuador: tatuador,
+      fecha: date.toISOString().split("T")[0],
+      hora: time,
+      descripcion: descripcion,
+      imagen: imagenUrl,
+      estado: "pendiente"
+    } 
+
+    console.log(citaPayload)
+    //Ya con la imagen subida y la cita cargada la sube
+    try {
+      const res = await fetch("http://localhost:8080/api/citas/crear", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          'Authorization': `Bearer ${token}` 
+        },
+        body: JSON.stringify(citaPayload)
+      });
+
+      if (!res.ok) {
+        throw new Error("Error al registrar la cita");
+      }
+
+      alert("Cita solicitada correctamente");
+      navigate("/citas")
+    } catch (error) {
+      console.error("Error al enviar la cita:", error);
+      alert("Hubo un error al solicitar la cita.");
+    }
+  }
   return (
     <div className="appointment-container">
       <h1 className="appointment-title">Solicitar Cita</h1>
@@ -86,7 +153,7 @@ export default function AppointmentPage() {
             <select id="artist" className="appointment-select">
               <option value="">Selecciona un artista</option>
                 {tatuadores.map( (tatuador) => (   
-                  <option key={tatuador.id} value={tatuador.nombre}>{tatuador.nombre}</option>
+                  <option key={tatuador.id} value={tatuador.id}>{tatuador.nombre}</option>
 
                 ))} 
             </select>
@@ -106,8 +173,7 @@ export default function AppointmentPage() {
           />
         </div>
 
-
-              {/* IMAGEN */}
+        {/* IMAGEN */}
         <div className="appointment-form-group">
           <label htmlFor="imagen" className="appointment-label">
             Imagen de referencia
