@@ -4,6 +4,7 @@ import { createUserWithEmailAndPassword, sendEmailVerification, updateProfile } 
 
 
 
+//VENTANA DE REGISTRO
 export function RegisterDialog({ open, onOpenChange, onLogin }) {
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")

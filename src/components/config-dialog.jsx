@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react"
 import { auth } from "../firebase";
 
+//VENTANA DE CONFIGURACION DEL USUARIO
 export function ConfigDialog({ open, onOpenChange }) {
+
+  const token = localStorage.getItem("token")
 
   const [userData, setUserData] = useState({
     name: "Usuario",
@@ -10,18 +13,27 @@ export function ConfigDialog({ open, onOpenChange }) {
   })
 
   const cogerUsuario = async (user) => {
-    const response = await fetch(`http://localhost:8080/api/perfiles-usuario/${user.uid}`)
+  
+    const response = await fetch(`http://localhost:8080/api/perfiles-usuario/${user.uid}`, {
+      headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    }
+    })
     const data = await response.json()
     return data
     
   }
   
+  //USE EFFECT PARA CARGAR LOS DATOS DEL USUARIO EN SU CONFIGURACION
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (user) {
 
         //USUARIO COGIDO DE LA BASE DE DATOS PARA COGER DATOS SUYOS
+  
         const userBD = await cogerUsuario(user)
+        
         setUserData({
           id: userBD.id,
           name: userBD.nombre || "Sin nombre",
@@ -39,6 +51,8 @@ export function ConfigDialog({ open, onOpenChange }) {
 
   return () => unsubscribe(); // limpia el listener al desmontar
   }, []);
+
+  
 
   if (!open) return null
 
@@ -58,6 +72,7 @@ export function ConfigDialog({ open, onOpenChange }) {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
           nombre: userData.name,

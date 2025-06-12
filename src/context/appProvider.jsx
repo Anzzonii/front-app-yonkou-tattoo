@@ -3,7 +3,10 @@ import { jwtDecode } from 'jwt-decode';
 
 const AppContext = createContext();
 
+//VARIABLE GLOBAL PARA LOS TATUADORES Y EL USUARIO ACTUAL PARA COGERLOS SIN NECESIDAD DE USAR EL FETCH TODO EL RATO
 export const AppProvider = ({children}) => {
+
+    const token = localStorage.getItem("token")
 
     const [tatuadores, setTatuadores] = useState([]);
     const [usuarioActual, setUsuarioActual] = useState(null);
@@ -11,7 +14,12 @@ export const AppProvider = ({children}) => {
      useEffect(() => {
         const fetchTatuadores = async () => {
             try {
-                const res = await fetch(`http://localhost:8080/api/perfiles-usuario`);
+                const res = await fetch(`http://localhost:8080/api/perfiles-usuario`, {
+                    headers: { 
+                        "Content-Type": "application/json",
+                        'Authorization': `Bearer ${token}` 
+                    }
+                });
                 const data = await res.json()
 
                 const perfTatuadores = data.filter(user => user.esTatuador === true) 

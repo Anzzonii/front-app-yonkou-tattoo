@@ -2,8 +2,9 @@ import { useState } from "react"
 import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth"
 import { auth, googleProvider } from "../firebase"
 
-
-export function LoginDialog({ open, onOpenChange, onLogin, onRegister }) {
+//VENTANA DE LOGIN
+export function LoginDialog({ open, onOpenChange, onRegister }) {
+  const token = localStorage.getItem("token")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
 
@@ -28,7 +29,9 @@ export function LoginDialog({ open, onOpenChange, onLogin, onRegister }) {
       // Envía el token al backend
       const response = await fetch("http://localhost:8080/api/auth/firebase", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json"
+        },
         body: JSON.stringify({ idToken })
       })
       
@@ -38,7 +41,7 @@ export function LoginDialog({ open, onOpenChange, onLogin, onRegister }) {
 
       const data = await response.json();
 
-      // Aquí sí tienes el token JWT que te devolvió el backend
+      // Ponemos el token en el localStorage
       localStorage.setItem('token', data.token);
       location.reload()
     } catch (error) {
@@ -54,17 +57,20 @@ export function LoginDialog({ open, onOpenChange, onLogin, onRegister }) {
       // Envía el token al backend
       const response = await fetch("http://localhost:8080/api/auth/firebase", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json"        
+        },
         body: JSON.stringify({ idToken })
       })
 
       if (!response.ok) {
+        alert("Correo o contraseña incorrectos")
         throw new Error("Error al autenticar con el backend");
       }
 
       const data = await response.json();
 
-      // Aquí sí tienes el token JWT que te devolvió el backend
+      // Ponemos el token en el localStorage
       localStorage.setItem('token', data.token);
       location.reload()
     } catch (error) {
