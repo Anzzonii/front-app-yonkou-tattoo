@@ -1,17 +1,26 @@
 import { useState, useEffect } from "react"
 import { NavLink } from 'react-router-dom';
+import { jwtDecode } from "jwt-decode";
 
-// Datos de ejemplo
-
-const authors = ["Todos", "Carlos", "María", "Juan"]
-const types = ["Todos", "Tradicional", "Realista", "Neotradicional", "Blackwork", "Japonés"]
-
-export default function TattoosPage() {
+//VENTANA QUE MUESTRA TODOS LOS TATUAJES DE LA APP
+export default function Tatuajes() {
+  const [usuarioActual, setUsuarioActual] = useState(null);
   const [tattoos, setTattoos] = useState([]);
-  const [selectedAuthor, setSelectedAuthor] = useState("Todos")
-  const [selectedType, setSelectedType] = useState("Todos")
 
-  // Este useEffect se encarga de hacer el fetch
+  const token = localStorage.getItem("token")
+
+  useEffect(() => {
+  
+      // OBTENER EL USUARIO ACTUAL
+      const token = localStorage.getItem("token")
+      if(token){
+          const user = jwtDecode(token)
+          setUsuarioActual(user)
+      }
+      
+    }, []);
+    
+
   useEffect(() => {
     const fetchTattoos = async () => {
       try {
@@ -21,7 +30,7 @@ export default function TattoosPage() {
         const dataTattoos = data.filter(tatu => tatu.diseno === false )
 
 
-        setTattoos(dataTattoos); // Aquí guardas los tatuajes en el estado
+        setTattoos(dataTattoos.reverse());
       } catch (error) {
         console.error("Error al cargar tatuajes:", error);
       }
@@ -30,18 +39,34 @@ export default function TattoosPage() {
     fetchTattoos();
   }, []);
 
-  const filteredTattoos = tattoos.filter(
-    (tattoo) =>
-      (selectedAuthor === "Todos" || tattoo.author === selectedAuthor) &&
-      (selectedType === "Todos" || tattoo.type === selectedType),
-  )
+  const handleBorrar = async (id) => {
+    if (!window.confirm("¿Estás seguro de que quieres borrar este tatuaje?")) return;
 
+    try {
+      const response = await fetch(`http://localhost:8080/api/tatuajes/borrar/${id}`, {
+        method: "DELETE",
+        'Authorization': `Bearer ${token}` 
+      });
+
+      if (response.ok) {
+        alert("Tatuaje borrado correctamente");
+        window.location.reload();
+
+      } else {
+        alert("Error al borrar el tatuaje");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Error de conexión al intentar borrar el tatuaje");
+    }
+  };
   return (
     <div className="tatuajes-container">
       <div className="flex justify-between items-center mb-6">
         <h1 className="tatuajes-title">Galería de Tatuajes</h1>
+        {usuarioActual && usuarioActual.esTatuador &&
         <NavLink to='/tatuajes/subir-tatuaje' className="disenos-reserva-button">
-          <button className="upload-button" onClick={() => (window.location.hash = "#/subir-tatuaje")}>
+          <button className="upload-button">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="16"
@@ -61,48 +86,13 @@ export default function TattoosPage() {
             Subir Tatuaje
           </button>
         </NavLink>
+    }
       </div>
 
-      <div className="tatuajes-filters">
-        <div className="tatuajes-filter-group">
-          <label htmlFor="author-filter" className="tatuajes-filter-label">
-            Filtrar por artista
-          </label>
-          <select
-            id="author-filter"
-            className="tatuajes-select"
-            value={selectedAuthor}
-            onChange={(e) => setSelectedAuthor(e.target.value)}
-          >
-            {authors.map((author) => (
-              <option key={author} value={author}>
-                {author}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="tatuajes-filter-group">
-          <label htmlFor="type-filter" className="tatuajes-filter-label">
-            Filtrar por estilo
-          </label>
-          <select
-            id="type-filter"
-            className="tatuajes-select"
-            value={selectedType}
-            onChange={(e) => setSelectedType(e.target.value)}
-          >
-            {types.map((type) => (
-              <option key={type} value={type}>
-                {type}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
+      
 
       <div className="tatuajes-grid">
-        {filteredTattoos.map((tattoo) => (
+        {tattoos.map((tattoo) => (
           <div key={tattoo.id} className="tatuajes-card">
             <div className="tatuajes-card-image">
               <img
@@ -119,6 +109,11 @@ export default function TattoosPage() {
               <div className="tatuajes-card-info">
                 <p className="tatuajes-info-label">Estilo</p>
                 <p className="tatuajes-info-value">{tattoo.estilo}</p>
+              </div>
+              <div className="tatuajes-card-info borrar">
+                {usuarioActual && usuarioActual.esTatuador &&
+                <button onClick={() => handleBorrar(tattoo.id)} className="tatuajes-borrar-button">Borrar</button>
+                }
               </div>
             </div>
           </div>

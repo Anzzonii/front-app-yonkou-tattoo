@@ -1,23 +1,40 @@
 import { useState, useEffect } from "react"
 import { NavLink } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
 
-export default function DesignsPage() {
+//VENTANAS PARA MOSTRAR LOS DISEÑOS ACTUALES DE LA APLICACION
+export default function Disenos() {
+  const [usuarioActual, setUsuarioActual] = useState(null);
   const [disenos, setDisenos] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("")
+  
+  const token = localStorage.getItem("token")
+
+  useEffect(() => {
+    
+    if(token){
+        const user = jwtDecode(token)
+        setUsuarioActual(user)
+    }
+    
+  }, []);
 
   // UseEffect para cargar los diseños de los tatuajes
   useEffect(() => {
     const fetchTattoos = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/tatuajes");
+        const response = await fetch("http://localhost:8080/api/tatuajes", {
+          headers: { 
+              "Content-Type": "application/json"
+            }
+        });
         const data = await response.json();
 
         //Filtro para que solo se guarden los tatuajes que sean diseños
         const dataTattoos = data.filter(tatu => tatu.diseno === true )
 
 
-        setDisenos(dataTattoos);
+        setDisenos(dataTattoos.reverse());
       } catch (error) {
         console.error("Error al cargar tatuajes:", error);
       }
@@ -26,12 +43,35 @@ export default function DesignsPage() {
     fetchTattoos();
     }, []);
 
+    const handleBorrar = async (id) => {
+      if (!window.confirm("¿Estás seguro de que quieres borrar este tatuaje?")) return;
+
+      try {
+        const response = await fetch(`http://localhost:8080/api/tatuajes/borrar/${id}`, {
+          method: "DELETE",
+          'Authorization': `Bearer ${token}` 
+        });
+
+        if (response.ok) {
+          alert("Tatuaje borrado correctamente");
+          window.location.reload();
+
+        } else {
+          alert("Error al borrar el tatuaje");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        alert("Error de conexión al intentar borrar el tatuaje");
+      }
+  };
+
   return (
     <div className="disenos-container">
       <div className="flex justify-between items-center mb-6">
         <h1 className="disenos-title">Galería de Diseños</h1>
+        {usuarioActual && usuarioActual.esTatuador &&
         <NavLink to='/diseños/subir-diseño' className="disenos-reserva-button">
-          <button className="upload-button" onClick={() => (window.location.hash = "#/subir-diseno")}>
+          <button className="upload-button">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="16"
@@ -51,31 +91,7 @@ export default function DesignsPage() {
             Subir Diseño
           </button>
         </NavLink>
-      </div>
-      {/* Apartado para los filtros */}
-      <div className="disenos-search-container">
-        <input
-          type="search"
-          placeholder="Buscar por artista..."
-          className="disenos-search-input"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-        <svg
-          className="disenos-search-icon"
-          xmlns="http://www.w3.org/2000/svg"
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <circle cx="11" cy="11" r="8"></circle>
-          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-        </svg>
+        }
       </div>
 
       <div className="disenos-grid">
@@ -100,8 +116,15 @@ export default function DesignsPage() {
                   <p className="tatuajes-info-value">{tattoo.estilo}</p>
                 </div>
                 <div className="tatuajes-card-info reservar">
+                  {usuarioActual && !usuarioActual.esTatuador &&
                   <NavLink to={`/diseños/reserva/${tattoo.id}`} className="disenos-reserva-button">RESERVAR</NavLink>
+                  }
                 </div>
+                <div className="tatuajes-card-info borrar">
+                {usuarioActual && usuarioActual.esTatuador &&
+                <button onClick={() => handleBorrar(tattoo.id)} className="tatuajes-borrar-button">Borrar</button>
+                }
+              </div>
               </div>
             </div>
           ))}
